@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Consultas - Cua Cua Cuaccess</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Space+Grotesk:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: {
+            colors: { "primary": "#88171a", "secondary": "#fcd400", "surface": "#f8f9fb", "on-surface": "#191c1e" },
+            fontFamily: { "headline": ["Inter", "sans-serif"], "label": ["Space Grotesk", "sans-serif"] }
+        }}
+      }
+    </script>
+    <style>
+        .brand-gradient { background: linear-gradient(135deg, #88171a 0%, #a01c20 100%); }
+        .ambient-glow { pointer-events: none; position: absolute; border-radius: 50%; filter: blur(120px); z-index: 0; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #88171a33; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+
+<header class="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-md border-b px-8 py-4 text-center">
+    <a href="index.html" class="text-xl font-black text-primary font-headline uppercase tracking-tighter">Cua Cua Cuaccess</a>
+</header>
+
+<main class="min-h-screen pt-32 pb-20 px-6 relative">
+    <div class="ambient-glow top-[-5%] left-[-10%] w-[40rem] h-[40rem] bg-primary/10"></div>
+    <div class="ambient-glow bottom-[-5%] right-[-10%] w-[45rem] h-[45rem] bg-secondary/15"></div>
+
+    <div class="max-w-5xl mx-auto relative z-10">
+        <h1 class="text-4xl md:text-6xl font-black text-primary mb-4 font-headline">Catálogo de Consultas</h1>
+        <p class="text-on-surface-variant font-label mb-12">Todas las operaciones de tus bases de datos Access unificadas.</p>
+
+        <!-- Grilla Dinámica -->
+        <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Se llena con JS -->
+        </div>
+    </div>
+</main>
+
+<!-- MODAL 1: PROGRESO (Carga) -->
+<div id="modal-loading" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-md"></div>
+    <div class="relative bg-white rounded-3xl p-12 max-w-sm w-full shadow-2xl text-center border">
+        <div class="w-20 h-20 border-4 border-secondary/20 border-t-primary rounded-full animate-spin mx-auto mb-6"></div>
+        <h3 class="font-headline font-black text-2xl text-on-surface">Procesando...</h3>
+        <p class="text-sm text-on-surface-variant font-label mt-2">Accediendo al archivo Access en tiempo real.</p>
+    </div>
+</div>
+
+<!-- MODAL 2: FILTRO (Para RUT) -->
+<div id="modal-filter" class="fixed inset-0 z-[80] flex items-center justify-center hidden p-4">
+    <div class="absolute inset-0 bg-on-surface/40 backdrop-blur-xl"></div>
+    <div class="relative bg-white w-full max-w-2xl rounded-[2rem] shadow-2xl p-8 border">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-headline font-black text-2xl text-primary uppercase">Filtro de Consulta</h3>
+            <button onclick="closeModal('modal-filter')" class="material-symbols-outlined">close</button>
+        </div>
+        <div class="space-y-4">
+            <label class="text-[10px] font-bold font-label text-primary uppercase tracking-widest">Ingrese el RUT (sin puntos ni guión)</label>
+            <input id="filter-input" type="text" class="w-full bg-surface border-outline-variant/30 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20">
+            <button id="btn-ejecutar-filtro" class="w-full brand-gradient text-white py-4 rounded-xl font-bold shadow-lg">CONSULTAR DATOS</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 3: RESULTADOS (Grilla) -->
+<div id="modal-results" class="fixed inset-0 z-[90] flex items-center justify-center hidden p-4 md:p-8">
+    <div class="absolute inset-0 bg-on-surface/30 backdrop-blur-xl"></div>
+    <div class="relative bg-white w-full max-w-6xl max-h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border">
+        <div class="px-8 py-6 border-b bg-white flex justify-between items-center">
+            <div>
+                <h3 id="res-title" class="font-headline font-black text-2xl text-primary uppercase">Resultados de Consulta</h3>
+                <p id="res-subtitle" class="text-[10px] font-label text-on-surface-variant/60 uppercase tracking-widest mt-1"></p>
+            </div>
+            <button onclick="closeModal('modal-results')" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary/5 transition-colors group">
+                <span class="material-symbols-outlined group-hover:text-primary">close</span>
+            </button>
+        </div>
+        <div class="flex-1 overflow-auto px-8 py-4 custom-scrollbar bg-white">
+            <table class="min-w-full">
+                <thead id="table-head" class="sticky top-0 bg-white z-10 border-b"></thead>
+                <tbody id="table-body" class="divide-y divide-outline-variant/5"></tbody>
+            </table>
+        </div>
+        <div class="px-8 py-4 bg-surface text-right border-t">
+            <span id="res-count" class="text-[9px] font-label text-on-surface-variant/50 uppercase tracking-widest italic"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentDb = null, currentQuery = null;
+
+    // 1. Cargar el catálogo dinámico desde el backend
+    async function loadCatalog() {
+        const res = await fetch('/api/catalog');
+        const services = await res.json();
+        const grid = document.getElementById('services-grid');
+        
+        grid.innerHTML = services.map(s => `
+            <div class="bg-white p-6 rounded-2xl border border-outline-variant/10 shadow-sm hover:shadow-xl transition-all group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 ${s.tipo==='directa'?'bg-primary/10 text-primary':'bg-secondary/20 text-on-surface'} rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined">${s.tipo==='directa'?'bolt':'filter_alt'}</span>
+                    </div>
+                    <span class="text-[9px] font-bold font-label uppercase tracking-widest text-on-surface-variant/40 italic">${s.dbDesc}</span>
+                </div>
+                <h3 class="text-xl font-bold font-headline mb-4 group-hover:text-primary transition-colors">${s.label}</h3>
+                <div class="flex items-center justify-between mt-auto">
+                    <span class="text-[10px] font-mono text-on-surface-variant/40 uppercase">${s.tipo}</span>
+                    <button onclick="handleAction('${s.dbId}', '${s.queryId}', '${s.tipo}')" 
+                            class="bg-primary text-white px-6 py-2 rounded-lg font-label font-bold text-xs hover:bg-primary/90 transition-all">
+                        EJECUTAR
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // 2. Manejar la acción (si es directa o necesita filtro)
+    function handleAction(dbId, queryId, tipo, paramTipo) {
+        currentDb = dbId; currentQuery = queryId;
+        
+        if (tipo === 'filtro') {
+            const input = document.getElementById('filter-input');
+            input.value = ""; // Limpiar previo
+            input.classList.remove('border-primary'); // Quitar error visual
+            
+            // Cambio dinámico de etiqueta según el tipo de dato
+            const label = paramTipo === 'numero' ? 'Ingrese un valor NUMÉRICO' : 'Ingrese un valor de TEXTO';
+            document.querySelector('#modal-filter label').innerText = label;
+
+            document.getElementById('modal-filter').classList.remove('hidden');
+
+            document.getElementById('btn-ejecutar-filtro').onclick = () => {
+                const val = input.value.trim();
+                
+                // VALIDACIÓN: Si está vacío, marcamos error
+                if (!val) {
+                    input.classList.add('border-primary', 'ring-2', 'ring-primary/20');
+                    input.placeholder = "¡ESTE CAMPO ES OBLIGATORIO!";
+                    return;
+                }
+                
+                executeQuery('filter', val);
+            };
+        } else {
+            executeQuery('direct');
+        }
+    }
+
+    // 3. Ejecutar la llamada real al backend
+    async function executeQuery(tipo, valor = null) {
+        closeModal('modal-filter');
+        document.getElementById('modal-loading').classList.remove('hidden');
+        
+        const url = tipo === 'direct' 
+            ? `/api/direct/${currentDb}/${currentQuery}` 
+            : `/api/filter/${currentDb}/${currentQuery}/${valor}`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.success) renderResults(data);
+            else alert("Error: " + data.error);
+        } catch (e) { alert("Error de conexión"); }
+        
+        document.getElementById('modal-loading').classList.add('hidden');
+    }
+
+    // 4. Dibujar la tabla de resultados dinámicamente
+    function renderResults(res) {
+        const data = res.results;
+        if (data.length === 0) return alert("No se encontraron registros.");
+
+        const columns = Object.keys(data[0]);
+        document.getElementById('table-head').innerHTML = `<tr>${columns.map(c => `
+            <th class="py-4 px-3 font-label text-[11px] font-bold text-primary uppercase text-left tracking-wider">${c}</th>
+        `).join('')}</tr>`;
+
+        document.getElementById('table-body').innerHTML = data.map(row => `
+            <tr class="hover:bg-primary/5 transition-colors">
+                ${columns.map(c => `<td class="py-4 px-3 text-sm text-on-surface">${row[c]}</td>`).join('')}
+            </tr>
+        `).join('');
+
+        document.getElementById('res-count').innerText = `${res.count} registros encontrados | Engine v2.0`;
+        document.getElementById('modal-results').classList.remove('hidden');
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    document.addEventListener('keydown', e => { if(e.key==="Escape") { closeModal('modal-filter'); closeModal('modal-results'); } });
+    window.onload = loadCatalog;
+</script>
+</body>
+</html>

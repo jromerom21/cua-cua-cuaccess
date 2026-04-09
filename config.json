@@ -1,0 +1,30 @@
+
+{
+  "databases": [
+    {
+      "id": "CAE_RESU_2026",
+      "path": "./datos/CAE_RESU_2026.accdb",
+      "desc": "Base de datos CAE",
+      "queries": {
+        "get_all": {
+          "label": "Listado Maestro",
+          "sql": "SELECT * FROM FINA_LICI_2025 LIMIT 5",
+          "tipo": "directa"
+        },
+        "search_by_id": {
+          "label": "Búsqueda por RUT (Numérico)",
+          "sql": "SELECT * FROM FINA_LICI_2025 WHERE bene_ccae_rut = ?",
+          "tipo": "filtro",
+          "param_tipo": "numero"
+        },
+        "search_by_rut_text": {
+          "label": "Búsqueda por RUT con DV (Texto)",
+          "sql": "SELECT * FROM FINA_LICI_2025 WHERE bene_rut_dve = ?",
+          "tipo": "filtro",
+          "param_tipo": "texto"
+        }
+      }
+    }
+  ]
+}
+

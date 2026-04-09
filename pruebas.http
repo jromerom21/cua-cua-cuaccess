@@ -1,0 +1,14 @@
+
+
+### 1. Consulta Directa (Listado)
+GET http://localhost:3000/api/direct/CAE_RESU_2026/get_all
+
+###
+
+### 2. Filtro Numérico (RUT sin DV)
+GET http://localhost:3000/api/filter/CAE_RESU_2026/search_by_id/9187315
+
+###
+
+### 3. Filtro de Texto (RUT con DV)
+GET http://localhost:3000/api/filter/CAE_RESU_2026/search_by_rut_text/10912365K

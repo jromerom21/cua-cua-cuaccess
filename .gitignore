@@ -1,0 +1,4 @@
+node_modules/
+datos/*.accdb
+.env
+.DS_Store
