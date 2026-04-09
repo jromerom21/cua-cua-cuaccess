@@ -1,2 +1,0 @@
-# Crea el archivo vacío dentro de la carpeta datos
-echo "" > datos/.gitkeep
